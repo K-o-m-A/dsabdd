@@ -261,7 +261,10 @@ public class BDDFunctions {
         average = average / permutationVars.length();
         System.out.println(100 - average);
         System.out.println("--------------------------");
+        System.out.println("Variable order: " + bestBDD.variableOrder);
+        System.out.println("Size: " + bestBDD.size);
         printNode(bestBDD.root, "", true);
+        System.out.println();
         return bestBDD;
     }
 
@@ -349,6 +352,11 @@ public class BDDFunctions {
         String bfunction = "L+C+BHg+e+aFJ+kDmIMhcl+f+i+Kb+ED+J+gA";
         String variableOrder = "JCMDELHFKBAGI";
         String input_values = "0000000000000";
+
+//
+//        String bfunction = "abC+ABc+Abc+abc+ABC+aBc";
+//        String variableOrder = "ABC";
+//        String input_values = "000";
 
         Utils util = new Utils();
         BDDFunctions function = new BDDFunctions();
