@@ -43,9 +43,7 @@ public class Tester {
         String bfunction = "m+FB+JhA+L+e+cKD+G+ILCi+d+K+f+Ba+E+J+mH+G";
         String variableOrder = "JBDGIECMAFHLK";
 
-        BDDFunctions.BDD bdd = function.BDD_create(bfunction, variableOrder);
-
-
+//        BDDFunctions.BDD bdd = function.BDD_create(bfunction, variableOrder);
 //        tester.correctnessTest(bdd, bfunction, variableOrder, numVars);
 
         tester.allExpressionsTest();
