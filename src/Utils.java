@@ -2,42 +2,48 @@ import java.util.*;
 
 public class Utils {
     public ArrayList<String> dnfGenerator(int numVars) {
-        Random rand = new Random();
-        ArrayList<String> expressions = new ArrayList<String>();
-        String[] variables = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"};
-        for (int i = 0; i < 100; i++) {
-            StringBuilder expression = new StringBuilder();
-            int numClauses = rand.nextInt(numVars) + 1; // Choose a random number of clauses
-            for (int j = 0; j < numClauses; j++) {
-                StringBuilder clause = new StringBuilder();
-                boolean[] usedVars = new boolean[numVars];
-                int numLiterals = numVars;
+    Random rand = new Random();
+    ArrayList<String> expressions = new ArrayList<String>();
+    String[] variables = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"};
+    for (int i = 0; i < 100; i++) {
+        StringBuilder expression = new StringBuilder();
+        int numClauses = rand.nextInt(numVars) + 1; // Choose a random number of clauses
+        for (int j = 0; j < numClauses; j++) {
+            StringBuilder clause = new StringBuilder();
+            boolean[] usedVars = new boolean[numVars];
 
-                for (int k = 0; k < numLiterals; k++) {
-                    int varIndex = rand.nextInt(numVars);
-                    while (usedVars[varIndex]) {
-                        varIndex = rand.nextInt(numVars);
-                    }
-                    usedVars[varIndex] = true;
-
-                    String var = variables[varIndex];
-                    boolean negated = rand.nextBoolean();
-                    clause.append(negated ? var.toLowerCase() : var);
-
-                    if (k != numLiterals - 1) {
-                        clause.append(rand.nextBoolean() ? "" : "+"); // Use "+" for OR
-                    }
-                }
-
-                expression.append(clause.toString());
+            // Ensure that each clause has at least two literals
+            int numLiterals = 1;
+            while (numLiterals < 2) {
+                numLiterals = rand.nextInt(numVars) + 1;
             }
 
-            expressions.add(expression.toString());
-//            System.out.println(expression.toString());
+            for (int k = 0; k < numLiterals; k++) {
+                int varIndex = rand.nextInt(numVars);
+                while (usedVars[varIndex]) {
+                    varIndex = rand.nextInt(numVars);
+                }
+                usedVars[varIndex] = true;
 
+                String var = variables[varIndex];
+                boolean negated = rand.nextBoolean();
+                clause.append(negated ? var.toLowerCase() : var);
+
+                if (k != numLiterals - 1) {
+                    clause.append(rand.nextBoolean() ? "" : "+"); // Use "+" for OR
+                }
+            }
+
+            expression.append(clause.toString());
         }
-        return expressions;
+
+        expressions.add(expression.toString());
+//        System.out.println(expression.toString());
+
     }
+    return expressions;
+}
+
 
     public String evaluateExpression(String expression, String evaluation, String variableOrder) {
 //        System.out.println("Expression : " + expression);

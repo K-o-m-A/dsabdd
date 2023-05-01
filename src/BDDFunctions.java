@@ -18,7 +18,8 @@ public class BDDFunctions {
 
     Node terminal_0 = new Node('0', "0", null, null);
     Node terminal_1 = new Node('1', "1", null, null);
-
+    double finAverage = 0;
+    double finAverageTime = 0;
 
     public BDD BDD_create(String bfunction, String variableOrder) {
         int numVars = variableOrder.length();
@@ -50,14 +51,9 @@ public class BDDFunctions {
     }
 
     private int countUniqueNodes(Node node, ArrayList<Node> nodes) {
-        if (node == null) {
-            return 0;
-        }
+        if (node == null) { return 0; }
 
-        if (!nodes.contains(node)) {
-            nodes.add(node);
-        }
-
+        if (!nodes.contains(node)) { nodes.add(node); }
         countUniqueNodes(node.getHighChild(), nodes);
         countUniqueNodes(node.getLowChild(), nodes);
 
@@ -65,9 +61,7 @@ public class BDDFunctions {
     }
 
     public Node decompose(Node node, String variableOrder, int depth, ArrayList<ArrayList<Node>> expressionsDepth) {
-        if (depth >= variableOrder.length()) {
-            return node;
-        }
+        if (depth >= variableOrder.length()) { return node; }
 
         Node highChild = null;
         Node lowChild = null;
@@ -94,7 +88,8 @@ public class BDDFunctions {
                 if (decomposedNode.getExpression().charAt(idx) == Character.toLowerCase(var)) {
                     highChildExpression = highChildExpression.substring(0, idx) + lowValue + highChildExpression.substring(idx + 1);
                     lowChildExpression = lowChildExpression.substring(0, idx) + highValue + lowChildExpression.substring(idx + 1);
-                } else {
+                }
+                else {
                     highChildExpression = highChildExpression.substring(0, idx) + highValue + highChildExpression.substring(idx + 1);
                     lowChildExpression = lowChildExpression.substring(0, idx) + lowValue + lowChildExpression.substring(idx + 1);
                 }
@@ -106,14 +101,11 @@ public class BDDFunctions {
             StringBuilder sb = new StringBuilder();
             int tmpLengthHigh = 0;
             for (String part : highChildParts) {
-                if (!part.contains("0")) {
-                    tmpLengthHigh++;
-                }
+                if (!part.contains("0")) { tmpLengthHigh++; }
             }
 
-            if (tmpLengthHigh == 0) {
-                highChildExpression = "0";
-            } else {
+            if (tmpLengthHigh == 0) { highChildExpression = "0"; }
+            else {
                 int tmpLengthPartHigh = 0;
                 for (String part : highChildParts) {
                     if (!part.contains("0")) {
@@ -123,20 +115,13 @@ public class BDDFunctions {
                             flag1High = true;
                             break;
                         }
-                        if (tmpLengthPartHigh == tmpLengthHigh) {
-                            sb.append(part);
-                        } else {
-                            sb.append(part).append("+");
-                        }
-
+                        if (tmpLengthPartHigh == tmpLengthHigh) { sb.append(part); }
+                        else { sb.append(part).append("+"); }
                     }
                 }
 
-                if (flag1High) {
-                    highChildExpression = "1";
-                } else {
-                    highChildExpression = sb.toString();
-                }
+                if (flag1High) { highChildExpression = "1"; }
+                else { highChildExpression = sb.toString(); }
             }
 
             //LOW
@@ -144,14 +129,11 @@ public class BDDFunctions {
             sb = new StringBuilder();
             int tmpLengthLow = 0;
             for (String part : lowChildParts) {
-                if (!part.contains("0")) {
-                    tmpLengthLow++;
-                }
+                if (!part.contains("0")) { tmpLengthLow++; }
             }
 
-            if (tmpLengthLow == 0) {
-                lowChildExpression = "0";
-            } else {
+            if (tmpLengthLow == 0) { lowChildExpression = "0"; }
+            else {
                 int tmpLengthPartLow = 0;
                 for (String part : lowChildParts) {
                     if (!part.contains("0")) {
@@ -162,48 +144,25 @@ public class BDDFunctions {
                             break;
                         }
 
-                        if (tmpLengthPartLow == tmpLengthLow) {
-                            sb.append(part);
-                        }
-
-                        else {
-                            sb.append(part).append("+");
-                        }
-
+                        if (tmpLengthPartLow == tmpLengthLow) { sb.append(part); }
+                        else { sb.append(part).append("+"); }
                     }
                 }
 
-                if (flag1Low) {
-                    lowChildExpression = "1";
-                }
-
-                else {
-                    lowChildExpression = sb.toString();
-                }
+                if (flag1Low) { lowChildExpression = "1"; }
+                else { lowChildExpression = sb.toString(); }
             }
 
-
-            if (highChildExpression.equals("1")) {
-                highChild = terminal_1;
-            }
-
-            else if (highChildExpression.equals("0")) {
-                highChild = terminal_0;
-            }
-
+            //TERMINAL
+            if (highChildExpression.equals("1")) { highChild = terminal_1; }
+            else if (highChildExpression.equals("0")) { highChild = terminal_0; }
             else {
                 highChild = decompose(new Node(var, highChildExpression, null, null), variableOrder, depth + 1, expressionsDepth);
                 expressionsDepth.get(depth).add(highChild);
             }
 
-            if (lowChildExpression.equals("1")) {
-                lowChild = terminal_1;
-            }
-
-            else if (lowChildExpression.equals("0")) {
-                lowChild = terminal_0;
-            }
-
+            if (lowChildExpression.equals("1")) { lowChild = terminal_1; }
+            else if (lowChildExpression.equals("0")) { lowChild = terminal_0; }
             else {
                 lowChild = decompose(new Node(var, lowChildExpression, null, null), variableOrder, depth + 1, expressionsDepth);
                 expressionsDepth.get(depth).add(lowChild);
@@ -220,16 +179,11 @@ public class BDDFunctions {
             }
 
              //S-reduction
-            if (highChildExpression.equals(lowChildExpression)) {
-                return highChild;
-            }
+            if (highChildExpression.equals(lowChildExpression)) { return highChild; }
 
             return new Node(var, decomposedNode.getExpression(), highChild, lowChild);
         }
-
-        else {
-            return decompose(node, variableOrder, depth + 1, expressionsDepth);
-        }
+        else { return decompose(node, variableOrder, depth + 1, expressionsDepth); }
     }
 
     public BDD BDD_create_with_best_order(String bfunction) {
@@ -242,28 +196,43 @@ public class BDDFunctions {
         BDDFunctions.BDD bestBDD = null;
         double bestSize = 1000000000;
         double average = 0;
+        double averageTime = 0;
 
         for (String order : permutations) {
             System.out.println(order);
+
+            long startTime = System.currentTimeMillis();
             BDDFunctions.BDD currentBDD = function.BDD_create(bfunction, order);
+            long endTime = System.currentTimeMillis();
+
+            long finTime = endTime - startTime;
             printNode(currentBDD.root, "", true);
             double expectedSize = ((int) Math.pow(2, currentBDD.variableOrder.length() + 1)) - 1;
             double percentage = currentBDD.size / (expectedSize/100);
             average += percentage;
+            averageTime += finTime;
             tester.correctnessTest(currentBDD ,bfunction , currentBDD.variableOrder, currentBDD.numVars);
+            System.out.println("Time: " + finTime);
 
             if (currentBDD.size < bestSize) {
                 bestBDD = currentBDD;
                 bestSize = currentBDD.size;
             }
         }
+
         System.out.println("--------------------------");
         average = average / permutationVars.length();
+        averageTime = averageTime / permutationVars.length();
+        finAverage += average;
+        finAverageTime += averageTime;
         System.out.println(100 - average);
+        System.out.println("Average time: " + averageTime);
         System.out.println("--------------------------");
         System.out.println("Variable order: " + bestBDD.variableOrder);
         System.out.println("Size: " + bestBDD.size);
         printNode(bestBDD.root, "", true);
+        System.out.println("Average of all permutations: " + (100 - (finAverage / permutationVars.length())));
+        System.out.println("Average time of all permutations: " + (finAverageTime / permutationVars.length()));
         System.out.println();
         return bestBDD;
     }
@@ -285,27 +254,15 @@ public class BDDFunctions {
             if (current.getExpression().contains(String.valueOf(variable)) || current.getExpression().contains(String.valueOf(variable).toLowerCase())) {
                 if (value == '1') {
 //                    System.out.println(variable + " 1: " + current.getExpression());
-                    if (current.getExpression().equals("0") || current.getExpression().equals("1")) {
-                        return current.getExpression();
-                    }
+                    if (current.getExpression().equals("0") || current.getExpression().equals("1")) { return current.getExpression(); }
                     current = current.getHighChild();
                 }
 
                 else if (value == '0') {
 //                    System.out.println(variable + " 0: " + current.getExpression());
-
-                    if (current.getExpression().equals("0") || current.getExpression().equals("1")) {
-                        return current.getExpression();
-                    }
-
-                    if (current.getLowChild() == null) {
-                        current = current.getHighChild();
-                    }
-
-                    else{
-                        current = current.getLowChild();
-                    }
-
+                    if (current.getExpression().equals("0") || current.getExpression().equals("1")) { return current.getExpression(); }
+                    if (current.getLowChild() == null) { current = current.getHighChild(); }
+                    else{ current = current.getLowChild(); }
                 }
 
                 else {
@@ -319,7 +276,6 @@ public class BDDFunctions {
                 }
             }
         }
-
 //        System.out.println("Result : " + current.getExpression());
         return current.getExpression();
     }
@@ -341,22 +297,34 @@ public class BDDFunctions {
     }
 
     public static void main(String[] args) {
-//        String bfunction = "G+efJD+Ikh+LAMC+BB+Lj+h+CEDKF+Mai+gAE+lk+cmJ+ib+G+dhfdHfe+j+AC+lb+Ik+g+mD+AkC+F+I+M+jl+hbG+e";
-//        String variableOrder = "AILFCDMBJHGKE";
-//        String variableOrder = "GFEADIBCHJ";
-//        String input_values = "0101011011101";
-
+        //PETO FUNKCIA
 //        String bfunction = "AbcDef+AgHBC+aBc+abC+IEJKL+M";
-//        String variableOrder = "ABCDEFGHIJKLM";
-//
-        String bfunction = "L+C+BHg+e+aFJ+kDmIMhcl+f+i+Kb+ED+J+gA";
-        String variableOrder = "JCMDELHFKBAGI";
-        String input_values = "0000000000000";
+//        String variableOrder = "BCDEFGHIJKLMA";
+//        String input_values = "0000000000000";
+
+//        String bfunction = "L+C+BHg+e+aFJ+kDmIMhcl+f+i+Kb+ED+J+gA";
+//        String variableOrder = "JCMDELHFKBAGI";
+//        String input_values = "0000000000000";
+
+        //ADO FUNKCIA
+//        String bfunction = "FLIejB+CDgKm+H+aCjE+bmdK+F+L+GI+Haca+Dkg+JhM+BL+ieF";
+//        String variableOrder = "EGJDIKBAHFMCL";
+//        String input_values = "0000000000000";
 
 //
 //        String bfunction = "abC+ABc+Abc+abc+ABC+aBc";
 //        String variableOrder = "ABC";
 //        String input_values = "000";
+
+
+//        String bfunction = "KICEIhGB+mBDCH+EhJLC+aDlm+B+KMCD+CIlD+gIh+LgC+jk+HdBKf";
+//        String variableOrder = "HFGLIMBAJKECD";
+//        String input_values = "0000000000000";
+
+        //MARTIN FUNKCIA
+        String bfunction = "ABCdef+aBC+eFABc+FBeCCA+BF+CAF+BFea";
+        String variableOrder = "ABCDEF";
+        String input_values = "000000";
 
         Utils util = new Utils();
         BDDFunctions function = new BDDFunctions();
@@ -371,8 +339,7 @@ public class BDDFunctions {
 //        System.out.println("BDD variable order : " + bdd.variableOrder);
 //        printNode(bdd.root, "", true);
 //        System.out.println();
-//
-//
+
         System.out.println();
         System.out.println(util.evaluateExpression(bfunction, input_values, variableOrder));
         System.out.println(function.BDD_use(bdd, input_values));
